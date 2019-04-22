@@ -11,4 +11,6 @@ class LawyerDetailsView(RetrieveUpdateAPIView):
         try:
             return Lawyer.objects.get(user=self.request.user)
         except Lawyer.DoesNotExist:
-            raise NotFound('current user is not lawyer')
+            p = Lawyer(user=self.request.user)
+            p.save()
+            return p
