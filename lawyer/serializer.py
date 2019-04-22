@@ -14,6 +14,7 @@ class LawyerDetailSerializer(serializers.ModelSerializer):
             user = instance.user
             for k,v in user_data.items():
                 setattr(user, k, v)
+            user.save()
         for k,v in validated_data.items():
             if(k == 'user'):
                 continue
