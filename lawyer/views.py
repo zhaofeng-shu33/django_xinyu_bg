@@ -1,7 +1,7 @@
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
-from .serializer import LawyerDetailSerializer, SchoolSerializer
+from .serializer import LawyerDetailSerializer, SchoolSerializer, ClassViewSerializer
 from .models import Lawyer, Class, School
 # Create your views here.
 class LawyerDetailsView(RetrieveUpdateAPIView):
@@ -17,3 +17,7 @@ class LawyerDetailsView(RetrieveUpdateAPIView):
 class SchoolListView(ListAPIView):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
+
+class ClassListView(ListAPIView):
+    queryset = Class.objects.order_by('-start_time')
+    serializer_class = ClassViewSerializer
