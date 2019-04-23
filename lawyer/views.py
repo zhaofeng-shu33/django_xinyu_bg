@@ -1,8 +1,8 @@
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
-from .serializer import LawyerDetailSerializer
-from .models import Lawyer
+from .serializer import LawyerDetailSerializer, SchoolSerializer
+from .models import Lawyer, Class, School
 # Create your views here.
 class LawyerDetailsView(RetrieveUpdateAPIView):
     serializer_class = LawyerDetailSerializer
@@ -14,3 +14,6 @@ class LawyerDetailsView(RetrieveUpdateAPIView):
             p = Lawyer(user=self.request.user)
             p.save()
             return p
+class SchoolListView(ListAPIView):
+    queryset = School.objects.all()
+    serializer_class = SchoolSerializer
