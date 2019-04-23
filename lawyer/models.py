@@ -23,10 +23,10 @@ class Course(models.Model):
         return '《' + self.name + '》';
 class Class(models.Model):
     school = models.ForeignKey(School, related_name='classes', on_delete=models.CASCADE)
-    class_id = models.IntegerField()
+    class_id = models.IntegerField(help_text = '班级')
     duration = models.IntegerField(default=40)
     start_time = models.DateTimeField()
-    lawyer = models.ForeignKey(Lawyer, null=True, on_delete=models.CASCADE)
+    lawyer = models.ForeignKey(Lawyer, null=True, on_delete=models.CASCADE, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     def __str__(self):
-        return self.school.name + self.course.grade + ('%d班' % self.class_id) + self.course.name
+        return ('%d班' % self.class_id)
