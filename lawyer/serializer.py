@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_auth.serializers import UserDetailsSerializer
 from rest_framework.fields import empty
 from .models import Lawyer, Class, School, Course
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import PermissionDenied
 import pdb
 class LawyerDetailSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False, required=False)
@@ -26,13 +26,17 @@ class LawyerDetailSerializer(serializers.ModelSerializer):
         # self the instance for UserSerializer
         self.fields['user'].instance = self.instance.user
         return super(LawyerDetailSerializer, self).run_validation(data=data)
+class LawyerViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lawyer
+        fields = ('user',)
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ('name', 'grade')
 class ClassViewSerializer(serializers.ModelSerializer):
     school = serializers.StringRelatedField()
-    lawyer = serializers.StringRelatedField()
+    lawyer = LawyerViewSerializer()
     course = CourseSerializer()
     course_2 = CourseSerializer()
     class Meta:
@@ -45,12 +49,18 @@ class ClassApplySerializer(serializers.ModelSerializer):
         fields = ('lawyer',)
     def update(self, instance, validated_data):
         user = self.context['request'].user
-        try:
-            p = Lawyer.objects.get(user=user)
-        except Lawyer.DoesNotExist:
-            p = Lawyer(user=user)
-            p.save()
-        instance.lawyer = p
+        if(instance.lawyer):
+            if(instance.lawyer.user != user):
+                raise PermissionDenied("cannot cancel other's apply")
+            else:
+                instance.lawyer = None
+        else:
+            try:
+                p = Lawyer.objects.get(user=user)
+            except Lawyer.DoesNotExist:
+                p = Lawyer(user=user)
+                p.save()
+            instance.lawyer = p
         instance.save()
         return instance
 class SchoolSerializer(serializers.ModelSerializer):
