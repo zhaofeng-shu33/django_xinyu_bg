@@ -27,6 +27,8 @@ class Class(models.Model):
     duration = models.IntegerField(default=40)
     start_time = models.DateTimeField()
     lawyer = models.ForeignKey(Lawyer, null=True, on_delete=models.CASCADE, blank=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='course')
+    start_time_2 = models.DateTimeField(help_text = '第二堂普法课', null=True, blank=True)
+    course_2 = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='course_2', null=True, blank=True)
     def __str__(self):
         return ('%d班' % self.class_id)
