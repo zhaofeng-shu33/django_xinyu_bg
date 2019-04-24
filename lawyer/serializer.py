@@ -4,11 +4,25 @@ from rest_framework.fields import empty
 from .models import Lawyer, Class, School, Course
 from rest_framework.exceptions import PermissionDenied
 import pdb
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ('name', 'grade')
+class LawyerClassViewSerializer(serializers.ModelSerializer):
+    school = serializers.StringRelatedField()
+    course = CourseSerializer()
+    course_2 = CourseSerializer()
+    class Meta:
+        model = Class
+        fields = ('pk','school','start_time', 'course', 'class_id', 'start_time_2', 'course_2')
+
 class LawyerDetailSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False, required=False)
+    lawyer_classes = LawyerClassViewSerializer(many=True)
     class Meta:
         model = Lawyer
-        fields = ('user', 'law_firm')
+        fields = ('user', 'law_firm', 'lawyer_classes')
     def update(self, instance, validated_data):
         user_data = validated_data.get('user', None)
         if(user_data):
@@ -30,10 +44,7 @@ class LawyerViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lawyer
         fields = ('user',)
-class CourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Course
-        fields = ('name', 'grade')
+        
 class ClassViewSerializer(serializers.ModelSerializer):
     school = serializers.StringRelatedField()
     lawyer = LawyerViewSerializer()
