@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_auth.serializers import UserDetailsSerializer
 from rest_framework.fields import empty
 from .models import Lawyer, Class, School, Course
+from rest_framework.exceptions import NotFound
 import pdb
 class LawyerDetailSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False, required=False)
@@ -41,8 +42,16 @@ class ClassViewSerializer(serializers.ModelSerializer):
 class ClassApplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Class
-        fields = ('lawyer')
-        
+        fields = ('lawyer',)
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        try:
+            p = Lawyer.objects.get(user=user)
+        except Lawyer.DoesNotExist:
+            p = Lawyer(user=user)
+            p.save()
+        instance.lawyer = p
+        return instance
 class SchoolSerializer(serializers.ModelSerializer):
     classes = serializers.StringRelatedField()
     class Meta:
