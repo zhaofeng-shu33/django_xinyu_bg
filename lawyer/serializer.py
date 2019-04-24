@@ -51,6 +51,7 @@ class ClassApplySerializer(serializers.ModelSerializer):
             p = Lawyer(user=user)
             p.save()
         instance.lawyer = p
+        instance.save()
         return instance
 class SchoolSerializer(serializers.ModelSerializer):
     classes = serializers.StringRelatedField()
