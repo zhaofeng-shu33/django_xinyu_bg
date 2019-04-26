@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_auth.serializers import UserDetailsSerializer
 from rest_framework.fields import empty
-from .models import Lawyer, Class, School, Course
+from .models import Lawyer, Class, Course
 from rest_framework.exceptions import PermissionDenied
 import pdb
 
@@ -74,8 +74,3 @@ class ClassApplySerializer(serializers.ModelSerializer):
             instance.lawyer = p
         instance.save()
         return instance
-class SchoolSerializer(serializers.ModelSerializer):
-    classes = serializers.StringRelatedField()
-    class Meta:
-        model = School
-        fields = ('pk','name','classes')

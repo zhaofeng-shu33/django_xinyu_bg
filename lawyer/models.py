@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 class Lawyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     law_firm = models.CharField(max_length=20, null=True)
@@ -21,6 +22,7 @@ class Course(models.Model):
     grade = models.CharField(choices = GRADE, default='5', max_length=2)
     def __str__(self):
         return '《' + self.name + '》';
+
 class Class(models.Model):
     school = models.ForeignKey(School, related_name='classes', on_delete=models.CASCADE)
     class_id = models.IntegerField(help_text = '班级')
