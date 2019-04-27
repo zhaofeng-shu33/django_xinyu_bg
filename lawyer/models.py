@@ -20,12 +20,14 @@ class Course(models.Model):
         ('8','初二'))
     name = models.CharField(max_length=15)
     grade = models.CharField(choices = GRADE, default='5', max_length=2)
+    grade_2 = models.CharField(choices = GRADE, default='6', max_length=2)
     def __str__(self):
-        return '《' + self.name + '》';
+        return '《' + self.name + '》'
 
 class Class(models.Model):
     school = models.ForeignKey(School, related_name='classes', on_delete=models.CASCADE)
     class_id = models.IntegerField(help_text = '班级')
+    grade = models.IntegerField(help_text='年级', null=True)
     duration = models.IntegerField(default=40)
     start_time = models.DateTimeField()
     lawyer = models.ForeignKey(Lawyer, null=True, on_delete=models.CASCADE, blank=True, related_name='lawyer_classes')
