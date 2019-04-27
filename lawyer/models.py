@@ -35,4 +35,4 @@ class Class(models.Model):
     start_time_2 = models.DateTimeField(help_text = '第二堂普法课', null=True, blank=True)
     course_2 = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='course_2', null=True, blank=True)
     def __str__(self):
-        return ('%d班' % self.class_id)
+        return ('%d年级%d班' % (self.grade, self.class_id))
