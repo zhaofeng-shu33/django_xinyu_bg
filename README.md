@@ -15,7 +15,8 @@
  'allauth.account',
  'rest_auth.registration',
  'corsheaders',# 开发时需要设置跨域请求允许
- 'lawyer'
+ 'lawyer',
+ 'import_export'
 ]
 ```
 
