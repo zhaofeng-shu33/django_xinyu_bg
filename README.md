@@ -16,7 +16,7 @@
  'rest_auth.registration',
  'corsheaders',# 开发时需要设置跨域请求允许
  'lawyer',
- 'import_export'
+ 'import_export' # 后台导出Excel
 ]
 ```
 
@@ -71,7 +71,7 @@ TIME_ZONE = 'Asia/Shanghai'
 - 律师完善个人信息(PUT)和查看个人信息(GET)
 - 律师认领和取消认领某门课程（需登录）
 
-## 课程列表
+### 课程列表
  查看本学期所有课程（没有访问控制）
 GET [root]/class/?page=[page_number]
 没有 page 参数默认 page = 1，返回 JSON 格式的数据，其中 results 键对应着实际请求的数据：
@@ -81,7 +81,10 @@ GET [root]/class/?page=[page_number]
     "count": 100,
     "next": "next url",
     "previous": "previous url",
-    "results": {}
+    "results": []
 }
 ``` 
 关于具体的接口路径可查看 `lawyer/urls.py` 文件
+
+## 后端管理文档
+[wiki](https://github.com/zhaofeng-shu33/django_xinyu_bg/wiki/backend-admin.py)
