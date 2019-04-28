@@ -10,7 +10,6 @@ class ClassResource(resources.ModelResource):
     class Meta:
         model = Class
         fields =()
-    id = Field(attribute='id')
     school = Field(attribute='school__name', column_name='学校名称')
     grade_class_id = Field(column_name='班级')
     lawyer = Field(attribute='lawyer__user__username', column_name='授课律师')
@@ -33,7 +32,7 @@ class ClassResource(resources.ModelResource):
             return ''
         date_time_str = start_time.strftime('%m{m}%d{d}%H:%M').format(m='月', d='日')
         end_time = start_time + timedelta(seconds = class_obj.duration_2 * 60)
-        date_time_str += '-%d:%d'%(end_time.hour, end_time.minute)
+        date_time_str += end_time.strftime('-%H:%M')
         return date_time_str
     
 class LawyerResource(resources.ModelResource):
