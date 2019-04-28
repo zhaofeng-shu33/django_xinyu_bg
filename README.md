@@ -53,7 +53,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 - 要上的第二门普法课程（可为空）
 - 第二门普法课程的日期时间（可为空）
 
-由于普法课程在设计之初与年级相对应，故班级的表里面没有再存年级的信息。
+由于普法课程在设计之初与1~2个年级相对应，因此在课程表里添加了 `grade` 和 `grade_2` 两个字段，从5-8年级中选择。
 
 
 
@@ -64,6 +64,18 @@ CORS_ORIGIN_ALLOW_ALL = True
 - 律师注册、登录、修改密码（使用`rest_auth`的库）
 - 律师完善个人信息(PUT)和查看个人信息(GET)
 - 律师认领和取消认领某门课程（需登录）
-- 查看本学期所有课程（没有访问控制）
 
+## 课程列表
+ 查看本学期所有课程（没有访问控制）
+GET [root]/class/?page=[page_number]
+没有 page 参数默认 page = 1，返回 JSON 格式的数据，其中 results 键对应着实际请求的数据：
+
+```JSON
+{
+    "count": 100,
+    "next": "next url",
+    "previous": "previous url",
+    "results": {}
+}
+``` 
 关于具体的接口路径可查看 `lawyer/urls.py` 文件
