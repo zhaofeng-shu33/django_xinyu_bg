@@ -37,11 +37,6 @@ class Class(models.Model):
     duration_2 = models.IntegerField(default=40, help_text = '第二节课持续时间', null=True, blank=True)
     def __str__(self):
         return (self.school.name + '%d年级%d班' % (self.grade, self.class_id))
-    def was_applied(self):
-        return (self.lawyer is None)
-    def has_undetermined_time(self):
-        if(self.course_2 is None):
-            return False
-        if(self.start_time_2 is None):
-            return True
-        return False
+   
+    def second_start_time(self):
+        return True

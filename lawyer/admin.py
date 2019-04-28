@@ -47,7 +47,22 @@ class ClassInline(admin.StackedInline):
 
 class SchoolAdmin(admin.ModelAdmin):
     inlines = [ClassInline]
-    
+
+class IsAppliedFilter(admin.SimpleListFilter):
+    title = '认领课程情况'
+    parameter_name = 'isapplied'
+    def lookups(self, request, model_admin):
+        return(
+            ('applied', '已认领课程'),
+            ('not', '未认领课程')
+        )
+    def queryset(self, request, queryset):
+        if self.value() == 'not':
+            return queryset.filter(lawyer=None)
+        elif self.value() == 'applied':
+            return queryset.exclude(lawyer=None)
+
+        
 class ClassAdmin(ImportExportModelAdmin):
     resource_class = ClassResource
     fieldsets = [
@@ -55,8 +70,8 @@ class ClassAdmin(ImportExportModelAdmin):
         ('课程', {'fields': ['course', 'start_time', 'duration']}),
         ('课程2', {'fields': ['course_2', 'start_time_2', 'duration_2']})
         ]
-    list_filter = ['school']
-    list_display = ('__str__', 'lawyer', 'was_applied', 'has_undetermined_time') 
+    list_filter = ['school', IsAppliedFilter]
+    list_display = ('__str__', 'lawyer', 'start_time') 
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Course)
