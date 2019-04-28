@@ -26,8 +26,8 @@ class Course(models.Model):
 
 class Class(models.Model):
     school = models.ForeignKey(School, related_name='classes', on_delete=models.CASCADE)
-    class_id = models.IntegerField(help_text = '班级')
     grade = models.IntegerField(help_text='年级')
+    class_id = models.IntegerField(help_text = '班级')
     lawyer = models.ForeignKey(Lawyer, null=True, on_delete=models.CASCADE, blank=True, related_name='lawyer_classes')    
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='course')
     start_time = models.DateTimeField()    
