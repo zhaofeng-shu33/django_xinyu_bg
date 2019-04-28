@@ -43,14 +43,20 @@ class LawyerResource(resources.ModelResource):
 class ClassInline(admin.StackedInline):
     model = Class
     extra = 1
-    list_display = ('__str__', 'lawyer') 
+    
 
 class SchoolAdmin(admin.ModelAdmin):
     inlines = [ClassInline]
     
 class ClassAdmin(ImportExportModelAdmin):
     resource_class = ClassResource
-    
+    fieldsets = [
+        (None, {'fields': ['school', 'grade', 'class_id', 'lawyer']}),
+        ('课程', {'fields': ['course', 'start_time', 'duration']}),
+        ('课程2', {'fields': ['course_2', 'start_time_2', 'duration_2']})
+        ]
+    list_filter = ['school']
+    list_display = ('__str__', 'lawyer', 'was_applied', 'has_undetermined_time') 
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Course)
