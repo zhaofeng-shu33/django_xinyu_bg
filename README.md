@@ -15,7 +15,8 @@
  'allauth.account',
  'rest_auth.registration',
  'corsheaders',# 开发时需要设置跨域请求允许
- 'lawyer'
+ 'lawyer',
+ 'import_export'
 ]
 ```
 
@@ -40,6 +41,10 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 ```
 
+设置中文时区
+```python
+TIME_ZONE = 'Asia/Shanghai'
+```
 ## 数据库设计
 
 分律师、学校、课程、班级四张表，其中律师表与`django`自带的user表相关联，便于处理验证相关的请求，班级表比较复杂，考虑到一个班级一学期会上1~2门普法课程，目前采用如下的结构：
@@ -52,6 +57,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 - 一堂课持续的时间
 - 要上的第二门普法课程（可为空）
 - 第二门普法课程的日期时间（可为空）
+- 第二门普法课程的持续时间（可为空）
 
 由于普法课程在设计之初与1~2个年级相对应，因此在课程表里添加了 `grade` 和 `grade_2` 两个字段，从5-8年级中选择。
 
