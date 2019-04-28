@@ -48,7 +48,7 @@ class ClassViewSerializer(serializers.ModelSerializer):
     course_2 = serializers.StringRelatedField()
     class Meta:
         model = Class
-        fields = ('pk','school','lawyer','start_time', 'course', 'grade', 'class_id', 'start_time_2', 'course_2', 'grade')
+        fields = ('pk','school','lawyer','start_time', 'course', 'grade', 'class_id', 'start_time_2', 'course_2')
         
 class ClassApplySerializer(serializers.ModelSerializer):
     class Meta:
