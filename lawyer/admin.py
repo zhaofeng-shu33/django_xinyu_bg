@@ -62,6 +62,16 @@ class IsAppliedFilter(admin.SimpleListFilter):
         elif self.value() == 'applied':
             return queryset.exclude(lawyer=None)
 
+class HasUndetminedTime(admin.SimpleListFilter):
+    title = '课程时间确定情况'
+    parameter_name = 'undetermined'
+    def lookups(self, request, model_admin):
+        return(
+            ('has', '有未确定时间的课程'),
+        )
+    def queryset(self, request, queryset):
+        if self.value() == 'has':
+            return queryset.filter(start_time_2=None, course__isnull=False)
         
 class ClassAdmin(ImportExportModelAdmin):
     resource_class = ClassResource
@@ -70,8 +80,8 @@ class ClassAdmin(ImportExportModelAdmin):
         ('课程', {'fields': ['course', 'start_time', 'duration']}),
         ('课程2', {'fields': ['course_2', 'start_time_2', 'duration_2']})
         ]
-    list_filter = ['school', IsAppliedFilter]
-    list_display = ('__str__', 'lawyer', 'start_time') 
+    list_filter = ['school', IsAppliedFilter, HasUndetminedTime]
+    list_display = ('__str__', 'lawyer', 'start_time', 'start_time_2') 
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Course)
