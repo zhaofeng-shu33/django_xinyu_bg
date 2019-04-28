@@ -71,7 +71,7 @@ class HasUndetminedTime(admin.SimpleListFilter):
         )
     def queryset(self, request, queryset):
         if self.value() == 'has':
-            return queryset.filter(start_time_2=None, course__isnull=False)
+            return queryset.filter(start_time_2=None, course_2__isnull=False)
         
 class ClassAdmin(ImportExportModelAdmin):
     resource_class = ClassResource
