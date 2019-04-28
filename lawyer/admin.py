@@ -9,9 +9,10 @@ admin.site.register(Lawyer)
 class ClassResource(resources.ModelResource):
     class Meta:
         model = Class
+        fields =()
     id = Field(attribute='id')
-    grade_class_id = Field(column_name='班级')
     school = Field(attribute='school__name', column_name='学校名称')
+    grade_class_id = Field(column_name='班级')
     lawyer = Field(attribute='lawyer__user__username', column_name='授课律师')
     course = Field(attribute='course__name', column_name='课程名称')
     course_date_time = Field(column_name='授课时间')
