@@ -37,6 +37,10 @@ REST_FRAMEWORK = {
 设置CORS相关的调试：
 
 ```python
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    ...
+]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 ```

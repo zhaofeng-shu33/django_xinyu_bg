@@ -5,7 +5,11 @@ from import_export.fields import Field
 from datetime import timedelta
 from .models import Lawyer, School, Class, Course
 # Register your models here.
-admin.site.register(Lawyer)
+class LawyerAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'law_firm')
+    list_filter = ['law_firm']
+
+admin.site.register(Lawyer, LawyerAdmin)
 class ClassResource(resources.ModelResource):
     class Meta:
         model = Class
