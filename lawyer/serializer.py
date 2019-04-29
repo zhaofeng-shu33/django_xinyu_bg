@@ -1,9 +1,18 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_auth.serializers import UserDetailsSerializer
 from rest_framework.fields import empty
 from .models import Lawyer, Class, Course
 from rest_framework.exceptions import PermissionDenied
-import pdb
+# Get the UserModel
+UserModel = get_user_model()
+
+class UserDetailsSerializer(serializers.ModelSerializer):
+    """
+    User model w/o password
+    """
+    class Meta:
+        model = UserModel
+        fields = ('pk', 'username', 'email')
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
