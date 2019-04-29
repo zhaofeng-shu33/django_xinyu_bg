@@ -19,7 +19,7 @@ class LawyerClassViewSerializer(serializers.ModelSerializer):
 
 class LawyerDetailSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False, required=False)
-    lawyer_classes = LawyerClassViewSerializer(many=True)
+    lawyer_classes = LawyerClassViewSerializer(many=True, required=False)
     class Meta:
         model = Lawyer
         fields = ('user', 'law_firm', 'lawyer_classes')
