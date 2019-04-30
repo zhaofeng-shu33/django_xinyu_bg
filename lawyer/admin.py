@@ -22,34 +22,29 @@ class LawyerAdmin(admin.ModelAdmin):
 
 admin.site.register(Lawyer, LawyerAdmin)
 
-class ClassResource(resources.ModelResource):
+class LectureResource(resources.ModelResource):
     class Meta:
-        model = Class
+        model = Lecture
         fields =()
-    school = Field(attribute='school__name', column_name='学校名称')
+    school = Field(attribute='classroom__school__name', column_name='学校名称')
     grade_class_id = Field(column_name='班级')
-    lawyer = Field(attribute='lawyer__user__username', column_name='授课律师')
+    lawyer = Field(attribute='classroom__lawyer__user__username', column_name='授课律师')
     course = Field(attribute='course__name', column_name='课程名称')
     course_date_time = Field(column_name='授课时间')
-    course_2 = Field(attribute='course_2__name', column_name='课程名称2')
-    course_date_time_2 = Field(column_name='授课时间2')
 
-    def dehydrate_grade_class_id(self, class_obj):
+    def dehydrate_grade_class_id(self, lecture_obj):
+        class_obj = lecture_obj.classroom
         return '%s年级%s班' % (class_obj.grade, class_obj.class_id)
-    def dehydrate_course_date_time(self, class_obj):
-        start_time = class_obj.start_time
-        date_time_str = start_time.strftime('%m{m}%d{d}%H:%M').format(m='月', d='日')
-        end_time = start_time + timedelta(seconds = class_obj.duration * 60)
-        date_time_str += '-%d:%d'%(end_time.hour, end_time.minute)
+    def dehydrate_course_date_time(self, lecture_obj):
+        start_time = lecture_obj.start_time
+        if(start_time):
+            date_time_str = start_time.strftime('%m{m}%d{d}%H:%M').format(m='月', d='日')
+            end_time = start_time + timedelta(seconds = lecture_obj.duration * 60)
+            date_time_str += '-%d:%d'%(end_time.hour, end_time.minute)
+        else:
+            date_time_str = '未确定时间'
         return date_time_str
-    def dehydrate_course_date_time_2(self, class_obj):
-        start_time = class_obj.start_time_2
-        if start_time is None:
-            return ''
-        date_time_str = start_time.strftime('%m{m}%d{d}%H:%M').format(m='月', d='日')
-        end_time = start_time + timedelta(seconds = class_obj.duration_2 * 60)
-        date_time_str += end_time.strftime('-%H:%M')
-        return date_time_str
+
     
 class LawyerResource(resources.ModelResource):
     class Meta:
@@ -92,8 +87,7 @@ class LectureInline(admin.StackedInline):
     model = Lecture
     extra = 0
 
-class ClassAdmin(ImportExportModelAdmin):
-    resource_class = ClassResource
+class ClassAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['school', 'grade', 'class_id', 'lawyer']})
     ]
@@ -104,6 +98,8 @@ admin.site.register(School, SchoolAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Course)
 
-class LectureAdmin(admin.ModelAdmin):
+class LectureAdmin(ImportExportModelAdmin):
+    resource_class = LectureResource
     list_display = ('classroom', 'course', 'start_time')
+    list_filter = ['course', 'classroom__school']
 admin.site.register(Lecture, LectureAdmin)
