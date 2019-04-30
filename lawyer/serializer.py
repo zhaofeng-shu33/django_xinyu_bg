@@ -20,13 +20,18 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         model = UserModel
         fields = ('pk', 'username', 'email')
 
+class LectureSerializer(serializers.ModelSerializer):
+    course = serializers.StringRelatedField()
+    class Meta:
+        model = Lecture
+        fields = ('course', 'start_time', 'duration')
+        
 class LawyerClassViewSerializer(serializers.ModelSerializer):
     school = serializers.StringRelatedField()
-    course = serializers.StringRelatedField()
-    course_2 = serializers.StringRelatedField()
+    lectures = LectureSerializer(many=True)
     class Meta:
         model = Class
-        fields = ('pk', 'school', 'start_time', 'course', 'grade', 'class_id', 'start_time_2', 'course_2')
+        fields = ('pk', 'school', 'grade', 'class_id', 'lectures')
 
 class LawyerDetailGetSerialier(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False)
@@ -66,21 +71,14 @@ class LawyerViewSerializer(serializers.ModelSerializer):
         model = Lawyer
         fields = ('user',)
 
-class LectureSerializer(serializers.ModelSerializer):
-    course = serializers.StringRelatedField()
-    class Meta:
-        model = Lecture
-        fields = ('course', 'start_time', 'duration')
-        
+
 class ClassViewSerializer(serializers.ModelSerializer):
     school = serializers.StringRelatedField()
     lawyer = LawyerViewSerializer()
-    course = serializers.StringRelatedField()
-    course_2 = serializers.StringRelatedField()
     lectures = LectureSerializer(many=True)
     class Meta:
         model = Class
-        fields = ('pk','school','lawyer','start_time', 'course', 'grade', 'class_id', 'start_time_2', 'course_2', 'lectures')
+        fields = ('pk','school','lawyer', 'grade', 'class_id', 'lectures')
         
 class ClassApplySerializer(serializers.ModelSerializer):
     class Meta:
