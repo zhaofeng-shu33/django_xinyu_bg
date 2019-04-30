@@ -1,4 +1,7 @@
-from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
@@ -10,8 +13,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 20
 
-class LawyerDetailsView(RetrieveUpdateAPIView):
-    serializer_class = LawyerDetailSerializer
+class LawyerDetailsView(APIView):
     permission_classes = (IsAuthenticated, )
     def get_object(self):
         try:
@@ -20,7 +22,17 @@ class LawyerDetailsView(RetrieveUpdateAPIView):
             p = Lawyer(user=self.request.user)
             p.save()
             return p
-
+    def get(self, request, format=None):
+        p = self.get_object()
+        serializer = LawyerDetailSerializer(p)
+        return Response(serializer.data)
+    def put(self, request, format=None):
+        p = self.get_object()
+        serializer = LawyerDetailSerializer(p, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 class ClassListView(ListAPIView):
     queryset = Class.objects.all()
     pagination_class = StandardResultsSetPagination
