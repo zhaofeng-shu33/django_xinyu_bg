@@ -3,7 +3,7 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
 from datetime import timedelta
-from .models import LawyerOffice, Lawyer, School, Class, Course
+from .models import LawyerOffice, Lawyer, School, Class, Course, Lecture
 # Register your models here.
 class LawyerOfficeResource(resources.ModelResource):
     class Meta:
@@ -86,17 +86,24 @@ class HasUndetminedTime(admin.SimpleListFilter):
         )
     def queryset(self, request, queryset):
         if self.value() == 'has':
-            return queryset.filter(start_time_2=None, course_2__isnull=False)
-        
+            return queryset.filter(lectures__start_time=None)
+
+class LectureInline(admin.StackedInline):
+    model = Lecture
+    extra = 0
+
 class ClassAdmin(ImportExportModelAdmin):
     resource_class = ClassResource
     fieldsets = [
-        (None, {'fields': ['school', 'grade', 'class_id', 'lawyer']}),
-        ('课程', {'fields': ['course', 'start_time', 'duration']}),
-        ('课程2', {'fields': ['course_2', 'start_time_2', 'duration_2']})
-        ]
+        (None, {'fields': ['school', 'grade', 'class_id', 'lawyer']})
+    ]
     list_filter = ['school', IsAppliedFilter, HasUndetminedTime]
-    list_display = ('__str__', 'lawyer', 'start_time', 'start_time_2') 
+    list_display = ('__str__', 'lawyer')
+    inlines = [LectureInline]
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Course)
+
+class LectureAdmin(admin.ModelAdmin):
+    list_display = ('classroom', 'course', 'start_time')
+admin.site.register(Lecture, LectureAdmin)
