@@ -8,7 +8,6 @@ class LawyerOffice(models.Model):
 
 class Lawyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    law_firm = models.CharField(max_length=20, null=True)
     office = models.ForeignKey(LawyerOffice, on_delete=models.CASCADE, null=True)
     def __str__(self):
         return self.user.__str__()
