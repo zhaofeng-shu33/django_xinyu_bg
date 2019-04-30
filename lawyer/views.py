@@ -5,7 +5,8 @@ from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
-from .serializer import LawyerOfficeSerializer, LawyerDetailSerializer, ClassViewSerializer, ClassApplySerializer
+from .serializer import LawyerOfficeSerializer, ClassViewSerializer, ClassApplySerializer,\
+    LawyerDetailGetSerialier, LawyerDetailPutSerializer
 from .models import Lawyer, LawyerOffice, Class
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -24,14 +25,15 @@ class LawyerDetailsView(APIView):
             return p
     def get(self, request, format=None):
         p = self.get_object()
-        serializer = LawyerDetailSerializer(p)
+        serializer = LawyerDetailGetSerialier(p)
         return Response(serializer.data)
     def put(self, request, format=None):
         p = self.get_object()
-        serializer = LawyerDetailSerializer(p, data=request.data)
+        serializer = LawyerDetailPutSerializer(p, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            serializer_2 = LawyerDetailGetSerialier(p)
+            return Response(serializer_2.data)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 class ClassListView(ListAPIView):
     queryset = Class.objects.all()

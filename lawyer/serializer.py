@@ -28,13 +28,19 @@ class LawyerClassViewSerializer(serializers.ModelSerializer):
         model = Class
         fields = ('pk', 'school', 'start_time', 'course', 'grade', 'class_id', 'start_time_2', 'course_2')
 
-class LawyerDetailSerializer(serializers.ModelSerializer):
-    user = UserDetailsSerializer(many=False, required=False)
-    lawyer_classes = LawyerClassViewSerializer(many=True, required=False)
-    office = LawyerOfficeSerializer(required=False)
+class LawyerDetailGetSerialier(serializers.ModelSerializer):
+    user = UserDetailsSerializer(many=False)
+    lawyer_classes = LawyerClassViewSerializer(many=True)
+    office = LawyerOfficeSerializer()
     class Meta:
         model = Lawyer
         fields = ('user', 'lawyer_classes', 'office')
+
+class LawyerDetailPutSerializer(serializers.ModelSerializer):
+    user = UserDetailsSerializer(many=False, required=False)
+    class Meta:
+        model = Lawyer
+        fields = ('user', 'office')
     def update(self, instance, validated_data):
         user_data = validated_data.get('user', None)
         if(user_data):
@@ -43,11 +49,7 @@ class LawyerDetailSerializer(serializers.ModelSerializer):
                 setattr(user, k, v)
             user.save()
         if(validated_data.get('office', None)):
-            try:
-                office = LawyerOffice.objects.get(name=validated_data['office']['name'])
-                instance.office = office;
-            except Exception:
-                pass
+            instance.office = validated_data['office'];
         for k,v in validated_data.items():
             if(k == 'user' or k == 'office'):
                 continue
@@ -57,7 +59,7 @@ class LawyerDetailSerializer(serializers.ModelSerializer):
     def run_validation(self, data=empty):
         # self the instance for UserSerializer
         self.fields['user'].instance = self.instance.user
-        return super(LawyerDetailSerializer, self).run_validation(data=data)
+        return super(LawyerDetailPutSerializer, self).run_validation(data=data)
 class LawyerViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lawyer
