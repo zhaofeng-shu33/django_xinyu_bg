@@ -17,8 +17,8 @@ class LawyerOfficeAdmin(ImportExportModelAdmin):
 admin.site.register(LawyerOffice, LawyerOfficeAdmin)
 
 class LawyerAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'law_firm')
-    list_filter = ['law_firm']
+    list_display = ('__str__', 'office')
+    list_filter = ['office']
 
 admin.site.register(Lawyer, LawyerAdmin)
 

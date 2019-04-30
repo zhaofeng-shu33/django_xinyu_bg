@@ -2,8 +2,8 @@ from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView, UpdateAP
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
-from .serializer import LawyerDetailSerializer, ClassViewSerializer, ClassApplySerializer
-from .models import Lawyer, Class
+from .serializer import LawyerOfficeSerializer, LawyerDetailSerializer, ClassViewSerializer, ClassApplySerializer
+from .models import Lawyer, LawyerOffice, Class
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -30,3 +30,7 @@ class ClassRegisterView(UpdateAPIView):
     permission_classes = (IsAuthenticated, )
     queryset = Class.objects.all()
     serializer_class = ClassApplySerializer
+
+class LawyerOfficeView(ListAPIView):
+    queryset = LawyerOffice.objects.all()
+    serializer_class = LawyerOfficeSerializer

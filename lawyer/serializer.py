@@ -1,8 +1,14 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.fields import empty
-from .models import Lawyer, Class, Course
+from .models import LawyerOffice, Lawyer, Class, Course
 from rest_framework.exceptions import PermissionDenied
+
+class LawyerOfficeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LawyerOffice
+        fields = '__all__'
+
 # Get the UserModel
 UserModel = get_user_model()
 
@@ -20,14 +26,15 @@ class LawyerClassViewSerializer(serializers.ModelSerializer):
     course_2 = serializers.StringRelatedField()
     class Meta:
         model = Class
-        fields = ('pk','school','start_time', 'course', 'grade', 'class_id', 'start_time_2', 'course_2')
+        fields = ('pk', 'school', 'start_time', 'course', 'grade', 'class_id', 'start_time_2', 'course_2')
 
 class LawyerDetailSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False, required=False)
     lawyer_classes = LawyerClassViewSerializer(many=True, required=False)
+    office = LawyerOfficeSerializer(required=False)
     class Meta:
         model = Lawyer
-        fields = ('user', 'law_firm', 'lawyer_classes')
+        fields = ('user', 'lawyer_classes', 'office')
     def update(self, instance, validated_data):
         user_data = validated_data.get('user', None)
         if(user_data):
@@ -35,8 +42,14 @@ class LawyerDetailSerializer(serializers.ModelSerializer):
             for k,v in user_data.items():
                 setattr(user, k, v)
             user.save()
+        if(validated_data.get('office', None)):
+            try:
+                office = LawyerOffice.objects.get(name=validated_data['office']['name'])
+                instance.office = office;
+            except Exception:
+                pass
         for k,v in validated_data.items():
-            if(k == 'user'):
+            if(k == 'user' or k == 'office'):
                 continue
             setattr(instance, k, v)
         instance.save()
