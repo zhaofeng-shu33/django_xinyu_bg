@@ -49,6 +49,16 @@ CORS_ORIGIN_ALLOW_ALL = True
 ```python
 TIME_ZONE = 'Asia/Shanghai'
 ```
+
+在主目录的 ·urlpatterns· 里包含
+```python
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('rest-auth/', include('rest_auth.urls')),
+    path('xinyu/', include('lawyer.urls')),
+    ...
+]
+```
 ## 数据库设计
 
 分律师、学校、课程、班级四张表，其中律师表与`django`自带的user表相关联，便于处理验证相关的请求，班级表比较复杂，考虑到一个班级一学期会上1~2门普法课程，目前采用如下的结构：
