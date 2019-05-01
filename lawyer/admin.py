@@ -16,9 +16,14 @@ class LawyerOfficeAdmin(ImportExportModelAdmin):
 
 admin.site.register(LawyerOffice, LawyerOfficeAdmin)
 
+class ClassTabInline(admin.TabularInline):
+    model = Class
+    extra = 0
+
 class LawyerAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'office')
     list_filter = ['office']
+    inlines = [ ClassTabInline ]
 
 admin.site.register(Lawyer, LawyerAdmin)
 
