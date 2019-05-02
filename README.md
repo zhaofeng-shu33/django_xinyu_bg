@@ -104,4 +104,4 @@ GET [root]/class/?page=[page_number]
 关于具体的接口路径可查看 `lawyer/urls.py` 文件
 
 ## 后端管理文档
-[wiki](https://github.com/zhaofeng-shu33/django_xinyu_bg/wiki/backend-admin.py)
+[wiki](https://github.com/zhaofeng-shu33/django_xinyu_bg/wiki)

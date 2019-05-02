@@ -20,11 +20,30 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         model = UserModel
         fields = ('pk', 'username', 'email')
 
+class LawyerViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lawyer
+        fields = ('user',)
+
 class LectureSerializer(serializers.ModelSerializer):
     course = serializers.StringRelatedField()
+    lawyer = LawyerViewSerializer()
     class Meta:
         model = Lecture
-        fields = ('course', 'start_time', 'duration')
+        fields = ('course', 'start_time', 'duration', 'lawyer')
+
+class LawyerLectureClassSerializer(serializers.ModelSerializer):
+    school = serializers.StringRelatedField()
+    class Meta:
+        model = Class
+        fields = ('pk', 'school', 'grade', 'class_id')
+
+class LawyerLectureSerializer(serializers.ModelSerializer):
+    course = serializers.StringRelatedField()
+    classroom = LawyerLectureClassSerializer()
+    class Meta:
+        model = Lecture
+        fields = ('course', 'start_time', 'duration', 'classroom')
         
 class LawyerClassViewSerializer(serializers.ModelSerializer):
     school = serializers.StringRelatedField()
@@ -36,10 +55,11 @@ class LawyerClassViewSerializer(serializers.ModelSerializer):
 class LawyerDetailGetSerialier(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False)
     lawyer_classes = LawyerClassViewSerializer(many=True)
+    lawyer_lectures = LawyerLectureSerializer(many=True)
     office = LawyerOfficeSerializer()
     class Meta:
         model = Lawyer
-        fields = ('user', 'lawyer_classes', 'office')
+        fields = ('user', 'lawyer_classes', 'office', 'lawyer_lectures')
 
 class LawyerDetailPutSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False, required=False)
@@ -66,10 +86,7 @@ class LawyerDetailPutSerializer(serializers.ModelSerializer):
         self.fields['user'].instance = self.instance.user
         return super(LawyerDetailPutSerializer, self).run_validation(data=data)
 
-class LawyerViewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lawyer
-        fields = ('user',)
+
 
 
 class ClassViewSerializer(serializers.ModelSerializer):
@@ -80,24 +97,24 @@ class ClassViewSerializer(serializers.ModelSerializer):
         model = Class
         fields = ('pk','school','lawyer', 'grade', 'class_id', 'lectures')
         
-class ClassApplySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Class
-        fields = ('lawyer',)
-    def update(self, instance, validated_data):
-        user = self.context['request'].user
-        if(instance.lawyer):
-            if(instance.lawyer.user != user):
-                raise PermissionDenied("cannot cancel other's apply")
-            else:
-                instance.lawyer = None
+# for lawyer applies and cancel lectures
+def apply_or_cancel_lectures(request, classroom):
+    user = request.user
+    # get the first class lawyer
+    first_lecture = classroom.lectures.all()[0]
+    lawyer_id = -1
+    if(first_lecture.lawyer):
+        if(first_lecture.lawyer.user != user):
+            raise PermissionDenied("cannot cancel other's apply")
         else:
-            try:
-                p = Lawyer.objects.get(user=user)
-            except Lawyer.DoesNotExist:
-                p = Lawyer(user=user)
-                p.save()
-            instance.lawyer = p
-        instance.save()
-        return instance
+            classroom.lectures.update(lawyer = None)
+    else:
+        try:
+            p = Lawyer.objects.get(user=user)
+        except Lawyer.DoesNotExist:
+            p = Lawyer(user=user)
+            p.save()
+        lawyer_id = p.id
+        classroom.lectures.update(lawyer = p) # bulk update
+    return lawyer_id
 

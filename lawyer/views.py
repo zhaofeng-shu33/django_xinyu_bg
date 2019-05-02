@@ -1,12 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
-
-from .serializer import LawyerOfficeSerializer, ClassViewSerializer, ClassApplySerializer,\
-    LawyerDetailGetSerialier, LawyerDetailPutSerializer
+from rest_framework.exceptions import NotFound
+from .serializer import LawyerOfficeSerializer, ClassViewSerializer,\
+    LawyerDetailGetSerialier, LawyerDetailPutSerializer, apply_or_cancel_lectures
 from .models import Lawyer, LawyerOffice, Class
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -40,10 +40,17 @@ class ClassListView(ListAPIView):
     pagination_class = StandardResultsSetPagination
     serializer_class = ClassViewSerializer
     
-class ClassRegisterView(UpdateAPIView):
+class ClassRegisterView(APIView):
     permission_classes = (IsAuthenticated, )
-    queryset = Class.objects.all()
-    serializer_class = ClassApplySerializer
+    def get_object(self, pk):
+        try:
+            return Class.objects.get(pk=pk)
+        except Class.DoesNotExist:
+            raise NotFound(detail = 'classroom not found')
+    def put(self, request, pk, format=None):
+        classroom = self.get_object(pk)
+        lawyer_id = apply_or_cancel_lectures(request, classroom)
+        return Response({'lawyer':lawyer_id})
 
 class LawyerOfficeView(ListAPIView):
     queryset = LawyerOffice.objects.all()

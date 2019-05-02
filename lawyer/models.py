@@ -63,7 +63,7 @@ class Lecture(models.Model):
     classroom = models.ForeignKey(Class, on_delete=models.CASCADE, 
                                   related_name = 'lectures', verbose_name='班级')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='课程')
-    lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, verbose_name='律师', null=True)
+    lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, verbose_name='律师', null=True, blank=True, related_name='lawyer_lectures')
     start_time = models.DateTimeField('开始时间', null=True)    
     duration = models.IntegerField('持续时间', default=40)
     def __str__(self):
