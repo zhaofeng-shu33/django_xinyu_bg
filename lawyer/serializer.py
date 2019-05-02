@@ -54,12 +54,11 @@ class LawyerClassViewSerializer(serializers.ModelSerializer):
 
 class LawyerDetailGetSerialier(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False)
-    lawyer_classes = LawyerClassViewSerializer(many=True)
     lawyer_lectures = LawyerLectureSerializer(many=True)
     office = LawyerOfficeSerializer()
     class Meta:
         model = Lawyer
-        fields = ('user', 'lawyer_classes', 'office', 'lawyer_lectures')
+        fields = ('user', 'office', 'lawyer_lectures')
 
 class LawyerDetailPutSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False, required=False)
@@ -91,11 +90,10 @@ class LawyerDetailPutSerializer(serializers.ModelSerializer):
 
 class ClassViewSerializer(serializers.ModelSerializer):
     school = serializers.StringRelatedField()
-    lawyer = LawyerViewSerializer()
     lectures = LectureSerializer(many=True)
     class Meta:
         model = Class
-        fields = ('pk','school','lawyer', 'grade', 'class_id', 'lectures')
+        fields = ('pk','school', 'grade', 'class_id', 'lectures')
         
 # for lawyer applies and cancel lectures
 def apply_or_cancel_lectures(request, classroom):

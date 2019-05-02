@@ -94,10 +94,10 @@ class LectureInline(admin.StackedInline):
 
 class ClassAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['school', 'grade', 'class_id', 'lawyer']})
+        (None, {'fields': ['school', 'grade', 'class_id']})
     ]
     list_filter = ['school', IsAppliedFilter, HasUndetminedTime]
-    list_display = ('__str__', 'lawyer')
+    list_display = ('__str__',)
     inlines = [LectureInline]
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Class, ClassAdmin)

@@ -48,8 +48,6 @@ class Class(models.Model):
     school = models.ForeignKey(School, related_name='classes', on_delete=models.CASCADE)
     grade = models.IntegerField('年级')
     class_id = models.IntegerField('班级')
-    lawyer = models.ForeignKey(Lawyer, null=True, on_delete=models.CASCADE, 
-                               blank=True, related_name='lawyer_classes', verbose_name='律师')    
     def __str__(self):
         return (self.school.name + '%d年级%d班' % (self.grade, self.class_id))
    

@@ -36,7 +36,7 @@ class LawyerDetailsView(APIView):
             return Response(serializer_2.data)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 class ClassListView(ListAPIView):
-    queryset = Class.objects.order_by('lawyer')
+    queryset = Class.objects.all()
     pagination_class = StandardResultsSetPagination
     serializer_class = ClassViewSerializer
     
