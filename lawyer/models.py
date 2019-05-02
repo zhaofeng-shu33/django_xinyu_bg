@@ -5,7 +5,7 @@ class LawyerOffice(models.Model):
     class Meta:
         verbose_name = "律所"
         verbose_name_plural = verbose_name
-    name = models.CharField('名称', max_length=20)
+    name = models.CharField('名称', max_length=20, unique=True)
     def __str__(self):
         return self.name
 
@@ -22,7 +22,7 @@ class School(models.Model):
     class Meta:
         verbose_name = "学校"
         verbose_name_plural = verbose_name
-    name = models.CharField('名称', max_length=20)
+    name = models.CharField('名称', max_length=20, unique=True)
     def __str__(self):
         return self.name
         
