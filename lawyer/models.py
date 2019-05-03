@@ -9,12 +9,17 @@ class LawyerOffice(models.Model):
     def __str__(self):
         return self.name
 
+
 class Lawyer(models.Model):
     class Meta:
         verbose_name = "律师"
         verbose_name_plural = verbose_name
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     office = models.ForeignKey(LawyerOffice, on_delete=models.CASCADE, null=True, verbose_name='律所')
+    def get_current_office(self):
+        # get office for the current semester
+        s = Semester.objects.get_current()
+        return self.lawyer_office_semesters.get(semester__id = s['id']).office
     def __str__(self):
         return self.user.__str__()
 
@@ -97,6 +102,6 @@ class LawyerOfficeSemester(models.Model):
     class Meta:
         verbose_name = '各学期所在律所'
         verbose_name_plural = verbose_name
-    lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, verbose_name='律师')
+    lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, verbose_name='律师', related_name='lawyer_office_semesters')
     office = models.ForeignKey(LawyerOffice, on_delete=models.CASCADE, verbose_name='律所')
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='学期')

@@ -3,7 +3,6 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from .models import LawyerOffice, Lawyer, Class, Course, Lecture
 from rest_framework.exceptions import PermissionDenied
-
 class LawyerOfficeSerializer(serializers.ModelSerializer):
     class Meta:
         model = LawyerOffice
@@ -55,11 +54,15 @@ class LawyerClassViewSerializer(serializers.ModelSerializer):
 class LawyerDetailGetSerialier(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False)
     lawyer_lectures = LawyerLectureSerializer(many=True)
-    office = LawyerOfficeSerializer()
     class Meta:
         model = Lawyer
-        fields = ('user', 'office', 'lawyer_lectures')
-
+        fields = ('user', 'lawyer_lectures')
+    def to_representation(self, instance):
+        """instance is an Lawyer"""
+        ret = super().to_representation(instance)
+        office = instance.get_current_office()
+        ret['office'] = LawyerOfficeSerializer(office).data
+        return ret
 class LawyerDetailPutSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer(many=False, required=False)
     class Meta:
