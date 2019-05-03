@@ -20,6 +20,11 @@ class Lawyer(models.Model):
         # get office for the current semester
         s = Semester.objects.get_current()
         return self.lawyer_office_semesters.get(semester__id = s['id']).office
+    def set_current_office(self, office_id):        
+        s = Semester.objects.get_current()
+        office_semester = self.lawyer_office_semesters.get(semester__id = s['id'])
+        office_semester.office_id = office_id
+        office_semester.save()
     def __str__(self):
         return self.user.__str__()
 

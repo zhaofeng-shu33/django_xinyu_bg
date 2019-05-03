@@ -63,11 +63,9 @@ class LawyerDetailGetSerialier(serializers.ModelSerializer):
         office = instance.get_current_office()
         ret['office'] = LawyerOfficeSerializer(office).data
         return ret
-class LawyerDetailPutSerializer(serializers.ModelSerializer):
+class LawyerDetailPutSerializer(serializers.Serializer):
     user = UserDetailsSerializer(many=False, required=False)
-    class Meta:
-        model = Lawyer
-        fields = ('user', 'office')
+    office = serializers.IntegerField()
     def update(self, instance, validated_data):
         user_data = validated_data.get('user', None)
         if(user_data):
@@ -76,7 +74,7 @@ class LawyerDetailPutSerializer(serializers.ModelSerializer):
                 setattr(user, k, v)
             user.save()
         if(validated_data.get('office', None)):
-            instance.office = validated_data['office'];
+            instance.set_current_office(validated_data['office']);
         for k,v in validated_data.items():
             if(k == 'user' or k == 'office'):
                 continue
