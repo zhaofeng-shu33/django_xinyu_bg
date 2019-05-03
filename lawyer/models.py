@@ -69,3 +69,12 @@ class Lecture(models.Model):
             return self.start_time.strftime('%m{m}%d{d}').format(m='月', d='日')
         else:
             return '未确定时间'
+
+class Semester(models.Model):
+    class Meta:
+        verbose_name = '学期'
+        verbose_name_plural = verbose_name
+    name = models.CharField('名称', max_length=20, unique=True)
+    end_date = models.DateField('结束的日期')
+    def __str__(self):
+        return self.name
