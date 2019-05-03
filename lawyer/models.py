@@ -60,7 +60,7 @@ class Course(models.Model):
     name = models.CharField('名称', max_length=15)
     grade = models.CharField('年级', choices = GRADE, default='5', max_length=2)
     grade_2 = models.CharField('年级2', choices = GRADE, default='6', max_length=2, null=True, blank=True)
-    # abandon_semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='被淘汰的学期', null=True, blank=True)
+    abandon_semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='被淘汰的学期', null=True, blank=True)
     def __str__(self):
         return '《' + self.name + '》'
 
@@ -94,6 +94,9 @@ class Lecture(models.Model):
             return '未确定时间'
 
 class LawyerOfficeSemester(models.Model):
+    class Meta:
+        verbose_name = '各学期所在律所'
+        verbose_name_plural = verbose_name
     lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, verbose_name='律师')
     office = models.ForeignKey(LawyerOffice, on_delete=models.CASCADE, verbose_name='律所')
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='学期')
