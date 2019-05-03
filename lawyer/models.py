@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+SEMESTER_CACHE = {}
 class LawyerOffice(models.Model):
     class Meta:
         verbose_name = "律所"
@@ -25,7 +25,29 @@ class School(models.Model):
     name = models.CharField('名称', max_length=20, unique=True)
     def __str__(self):
         return self.name
+
+class SemesterManager(models.Manager):
+    def get_current(self):
+        # select the latest semester
+        if(SEMESTER_CACHE.get('id') is None):
+            s = Semester.objects.order_by('-end_date')[0]
+            SEMESTER_CACHE['id'] = s.id
+            SEMESTER_CACHE['name'] = s.name
+        return SEMESTER_CACHE
+    def clear_cache(self):
+        global SEMESTER_CACHE
+        SEMESTER_CACHE = {}  
         
+class Semester(models.Model):
+    class Meta:
+        verbose_name = '学期'
+        verbose_name_plural = verbose_name
+    name = models.CharField('名称', max_length=20, unique=True)
+    end_date = models.DateField('结束的日期')
+    objects = SemesterManager()
+    def __str__(self):
+        return self.name
+    
 class Course(models.Model):
     class Meta:
         verbose_name = "课程"
@@ -38,6 +60,7 @@ class Course(models.Model):
     name = models.CharField('名称', max_length=15)
     grade = models.CharField('年级', choices = GRADE, default='5', max_length=2)
     grade_2 = models.CharField('年级2', choices = GRADE, default='6', max_length=2, null=True, blank=True)
+    # abandon_semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='被淘汰的学期', null=True, blank=True)
     def __str__(self):
         return '《' + self.name + '》'
 
@@ -70,11 +93,7 @@ class Lecture(models.Model):
         else:
             return '未确定时间'
 
-class Semester(models.Model):
-    class Meta:
-        verbose_name = '学期'
-        verbose_name_plural = verbose_name
-    name = models.CharField('名称', max_length=20, unique=True)
-    end_date = models.DateField('结束的日期')
-    def __str__(self):
-        return self.name
+class LawyerOfficeSemester(models.Model):
+    lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, verbose_name='律师')
+    office = models.ForeignKey(LawyerOffice, on_delete=models.CASCADE, verbose_name='律所')
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='学期')

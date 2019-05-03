@@ -3,7 +3,7 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
 from datetime import timedelta
-from .models import LawyerOffice, Lawyer, School, Class, Course, Lecture, Semester
+from .models import LawyerOffice, Lawyer, School, Class, Course, Lecture, Semester, LawyerOfficeSemester
 # Register your models here.
 class LawyerOfficeResource(resources.ModelResource):
     class Meta:
@@ -25,11 +25,11 @@ admin.site.register(LawyerOffice, LawyerOfficeAdmin)
 class LectureTabInline(admin.TabularInline):
     model = Lecture
     extra = 0
-
+class LawyerOfficeSemesterInline(admin.TabularInline):
+    model = LawyerOfficeSemester
+    extra = 0
 class LawyerAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'office')
-    list_filter = ['office']
-    inlines = [ LectureTabInline ]
+    inlines = [LawyerOfficeSemesterInline, LectureTabInline]
 
 admin.site.register(Lawyer, LawyerAdmin)
 
