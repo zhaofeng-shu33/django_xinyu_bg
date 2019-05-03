@@ -15,7 +15,6 @@ class Lawyer(models.Model):
         verbose_name = "律师"
         verbose_name_plural = verbose_name
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    office = models.ForeignKey(LawyerOffice, on_delete=models.CASCADE, null=True, verbose_name='律所')
     def get_current_office(self):
         # get office for the current semester
         s = Semester.objects.get_current()
