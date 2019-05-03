@@ -11,6 +11,12 @@ class LawyerOfficeResource(resources.ModelResource):
         import_id_fields = ('name',)
         fields = ('name')
 
+class SchoolResource(resources.ModelResource):
+    class Meta:
+        model = School
+        import_id_fields = ('name',)
+        fields = ('name')
+
 class LawyerOfficeAdmin(ImportExportModelAdmin):
     resource_class = LawyerOfficeResource
 
@@ -51,16 +57,14 @@ class LectureResource(resources.ModelResource):
         return date_time_str
 
     
-class LawyerResource(resources.ModelResource):
-    class Meta:
-        model = Lawyer
 
 class ClassInline(admin.StackedInline):
     model = Class
     extra = 1
     
 
-class SchoolAdmin(admin.ModelAdmin):
+class SchoolAdmin(ImportExportModelAdmin):
+    resource_class = SchoolResource
     inlines = [ClassInline]
 
 class IsAppliedFilter(admin.SimpleListFilter):
