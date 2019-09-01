@@ -8,7 +8,7 @@ class LawyerOffice(models.Model):
     name = models.CharField('名称', max_length=20, unique=True)
     def __str__(self):
         return self.name
-
+    
 
 class Lawyer(models.Model):
     class Meta:
@@ -109,3 +109,11 @@ class LawyerOfficeSemester(models.Model):
     lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, verbose_name='律师', related_name='lawyer_office_semesters')
     office = models.ForeignKey(LawyerOffice, on_delete=models.CASCADE, verbose_name='律所')
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='学期')
+
+def initialize_empty_office(lawyer_p):
+    s = Semester.objects.get_current()
+    # to do, cache empty office
+    empty_office = LawyerOffice.objects.get(name='空')
+    # to do, add get_current_semester_obj func
+    instance = LawyerOfficeSemester(lawyer=lawyer_p, office=empty_office, semester=Semester.objects.get(id=s['id']))
+    instance.save()

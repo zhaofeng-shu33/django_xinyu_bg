@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import NotFound
 from .serializer import LawyerOfficeSerializer, ClassViewSerializer,\
     LawyerDetailGetSerialier, LawyerDetailPutSerializer, apply_or_cancel_lectures
-from .models import Lawyer, LawyerOffice, Class
+from .models import Lawyer, LawyerOffice, Class, initialize_empty_office
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -22,6 +22,7 @@ class LawyerDetailsView(APIView):
         except Lawyer.DoesNotExist:
             p = Lawyer(user=self.request.user)
             p.save()
+            initialize_empty_office(p)
             return p
     def get(self, request, format=None):
         p = self.get_object()
