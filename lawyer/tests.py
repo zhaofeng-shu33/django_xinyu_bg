@@ -34,6 +34,16 @@ def create_necessary_test_data():
         lec = Lecture(classroom=cla, course=cour, lawyer=p, start_time=datetime.now(), duration=40)
         lec.save()
 
+class ClassModelTests(TestCase):
+    def test_class_manager_get_class(self):
+        create_necessary_test_data()
+        cc = Class.objects.get_class('testschool', '6年级1班')
+        self.assertTrue(cc is not None)
+        cc2 = Class.objects.get_class('testschool2', '6年级1班')
+        self.assertTrue(cc2 is None)
+        cc3 = Class.objects.get_class('testschool', '7年级1班')
+        self.assertTrue(cc3 is None)
+
 class LawyerModelTests(TestCase):
     def test_can_bind_lawyer_with_user(self):
         create_necessary_test_data()
@@ -59,5 +69,8 @@ class CleansingTest(unittest.TestCase):
         grade_id, class_id = unpack_class_name(right_class_name_2)
         self.assertEqual(grade_id, 3)
         self.assertEqual(class_id, 11)
-
-       
+        wrong_class_name = '五年级三班'
+        try:
+            grade_id, class_id = unpack_class_name(wrong_class_name)
+        except NameError:
+            pass
