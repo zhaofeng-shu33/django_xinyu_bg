@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Lawyer, Semester, initialize_empty_office, LawyerOffice, Semester
+from .models import Lawyer, Semester, initialize_empty_office, LawyerOffice, Semester, School, Class, Lecture, Course
 from datetime import datetime
 # Create your tests here.
 def create_necessary_test_data():
@@ -17,6 +17,18 @@ def create_necessary_test_data():
         p = Lawyer(user=u)
         p.save()
         initialize_empty_office(p)
+        # create the school
+        sch = School(name='testschool')
+        sch.save()
+        # create the class
+        cla = Class(school=sch, grade='6', class_id='1')
+        cla.save()
+        # create the course
+        cour = Course(name='coursename')
+        cour.save()
+        # create the lecture
+        lec = Lecture(classroom=cla, course=cour, lawyer=p, start_time=datetime.now(), duration=40)
+        lec.save()
 
 class LawyerModelTests(TestCase):
     def test_can_bind_lawyer_with_user(self):
