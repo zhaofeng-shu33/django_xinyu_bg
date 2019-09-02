@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+# to do, cache empty office id only
+EMPTY_OFFICE_OBJ_CACHE = None
 SEMESTER_CACHE = {}
 class LawyerOffice(models.Model):
     class Meta:
@@ -111,9 +113,10 @@ class LawyerOfficeSemester(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='学期')
 
 def initialize_empty_office(lawyer_p):
-    s = Semester.objects.get_current()
-    # to do, cache empty office
-    empty_office = LawyerOffice.objects.get(name='空')
+    global EMPTY_OFFICE_OBJ_CACHE
+    s = Semester.objects.get_current()    
+    if EMPTY_OFFICE_OBJ_CACHE is None:
+        EMPTY_OFFICE_OBJ_CACHE = LawyerOffice.objects.get(name='空')
     # to do, add get_current_semester_obj func
-    instance = LawyerOfficeSemester(lawyer=lawyer_p, office=empty_office, semester=Semester.objects.get(id=s['id']))
+    instance = LawyerOfficeSemester(lawyer=lawyer_p, office=EMPTY_OFFICE_OBJ_CACHE, semester=Semester.objects.get(id=s['id']))
     instance.save()
