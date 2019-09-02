@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils import timezone
+
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
@@ -46,16 +48,16 @@ class LectureResource(resources.ModelResource):
     lawyer = Field(attribute='lawyer__user__username', column_name='授课律师')
     course = Field(attribute='course__name', column_name='课程名称')
     course_date_time = Field(column_name='授课时间')
-    class_and_time = Field()
     def dehydrate_grade_class_id(self, lecture_obj):
         class_obj = lecture_obj.classroom
         return '%s年级%s班' % (class_obj.grade, class_obj.class_id)
     def dehydrate_course_date_time(self, lecture_obj):
         start_time = lecture_obj.start_time
         if(start_time):
+            start_time = timezone.localtime(start_time)
             date_time_str = start_time.strftime('%m{m}%d{d}%H:%M').format(m='月', d='日')
             end_time = start_time + timedelta(seconds = lecture_obj.duration * 60)
-            date_time_str += '-%d:%d'%(end_time.hour, end_time.minute)
+            date_time_str += '-%02d:%02d'%(end_time.hour, end_time.minute)
         else:
             date_time_str = '未确定时间'
         return date_time_str
