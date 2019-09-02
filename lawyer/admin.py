@@ -101,6 +101,9 @@ class LectureResource(resources.ModelResource):
         lec.course = cour
 
         return lec
+    def import_obj(self, obj, data, dry_run):
+        super(LectureResource, self).import_obj(obj, data, dry_run)
+        # update the teaching time
 
 class ClassInline(admin.StackedInline):
     model = Class

@@ -1,11 +1,12 @@
 from datetime import datetime
 import unittest
+from django.utils import timezone
 from django.test import TestCase
 from django.contrib.auth.models import User
 
 from .models import Lawyer, Semester, initialize_empty_office, LawyerOffice, Semester, School, Class, Lecture, Course
 from .admin import LectureResource
-from .cleanse import unpack_class_name
+from .cleanse import unpack_class_name, parse_time
 # Create your tests here.
 def create_necessary_test_data():
         # create current Semester
@@ -77,3 +78,12 @@ class CleansingTest(unittest.TestCase):
             grade_id, class_id = unpack_class_name(wrong_class_name)
         except NameError:
             pass
+    def test_cleanse_datetime(self):
+        right_datetime_1 = '4月2日15:30-16:10';
+        dt, duration = parse_time(right_datetime_1)
+        dt = timezone.localtime(dt)
+        self.assertEqual(dt.month, 4)
+        self.assertEqual(dt.day, 2)
+        self.assertEqual(dt.hour, 15)
+        self.assertEqual(dt.minute, 30)
+        self.assertEqual(duration, 40)
