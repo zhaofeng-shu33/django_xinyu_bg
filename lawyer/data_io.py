@@ -1,18 +1,19 @@
 from import_export.instance_loaders import ModelInstanceLoader
-import pdb
+from .models import Class
 class LectureInstanceLoader(ModelInstanceLoader):
     def get_instance(self, row):
         try:
             params = {}
-            for key in self.resource.get_import_id_fields():
-                field = self.resource.fields[key]
-                params[field.attribute] = field.clean(row)
-            if params:
-                return self.get_queryset().get(**params)
-            else:
-                return None
+            field = self.resource.fields['school']
+            school_name = field.clean(row)
+            field = self.resource.fields['grade_class_id']
+            grade_class_string = field.clean(row)
+            class_obj = Class.objects.get_class(school_name, grade_class_string)
+            if class_obj is None:
+                return NameError(school_name + ' ' + grade_class_string + ' not exists in database')
+            params['classroom'] = class_obj
+            field = self.resource.fields['course']
+            params[field.attribute] = field.clean(row)
+            return self.get_queryset().get(**params)
         except self.resource._meta.model.DoesNotExist:
             return None
-        except Exception as e:
-            return None
-            # pdb.set_trace()

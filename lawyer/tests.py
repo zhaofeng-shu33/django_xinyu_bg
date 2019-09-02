@@ -56,7 +56,7 @@ class LectureIOTest(TestCase):
     def test_import_export_lectures_data(self):
         create_necessary_test_data()
         dataset = LectureResource().export()
-        result = LectureResource().import_data(dataset, dry_run=True, raise_errors=False)
+        result = LectureResource().import_data(dataset, dry_run=True, raise_errors=True)
         # self.assertFalse(result.has_errors())
 
 class CleansingTest(unittest.TestCase):
