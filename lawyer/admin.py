@@ -163,6 +163,7 @@ admin.site.register(Course)
 
 class LectureAdmin(ImportExportModelAdmin):
     resource_class = LectureResource
+    import_template_name = 'import.html'
     list_display = ('classroom', 'course', 'start_time')
     list_filter = ['course', 'classroom__school']
 admin.site.register(Lecture, LectureAdmin)
