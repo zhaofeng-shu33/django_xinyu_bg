@@ -4,6 +4,8 @@ from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
 from datetime import timedelta
 from .models import LawyerOffice, Lawyer, School, Class, Course, Lecture, Semester, LawyerOfficeSemester
+from .data_io import LectureInstanceLoader
+import pdb
 # Register your models here.
 class LawyerOfficeResource(resources.ModelResource):
     class Meta:
@@ -36,13 +38,15 @@ admin.site.register(Lawyer, LawyerAdmin)
 class LectureResource(resources.ModelResource):
     class Meta:
         model = Lecture
+        import_id_fields = ('class_and_time',)
+        instance_loader_class = LectureInstanceLoader
         fields =()
     school = Field(attribute='classroom__school__name', column_name='学校名称')
     grade_class_id = Field(column_name='班级')
     lawyer = Field(attribute='lawyer__user__username', column_name='授课律师')
     course = Field(attribute='course__name', column_name='课程名称')
     course_date_time = Field(column_name='授课时间')
-
+    class_and_time = Field()
     def dehydrate_grade_class_id(self, lecture_obj):
         class_obj = lecture_obj.classroom
         return '%s年级%s班' % (class_obj.grade, class_obj.class_id)
@@ -56,7 +60,25 @@ class LectureResource(resources.ModelResource):
             date_time_str = '未确定时间'
         return date_time_str
 
-    
+    def import_obj(self, obj, data, dry_run):
+        """
+        Traverses every field in this Resource and calls
+        :meth:`~import_export.resources.Resource.import_field`. If
+        ``import_field()`` results in a ``ValueError`` being raised for
+        one of more fields, those errors are captured and reraised as a single,
+        multi-field ValidationError."""
+        errors = {}
+        for field in self.get_import_fields():
+            if isinstance(field.widget, widgets.ManyToManyWidget):
+                continue
+            try:
+                pdb.set_trace()
+                self.import_field(field, obj, data)
+            except ValueError as e:
+                errors[field.attribute] = ValidationError(
+                    force_text(e), code="invalid")
+        if errors:
+            raise ValidationError(errors)    
 
 class ClassInline(admin.StackedInline):
     model = Class
