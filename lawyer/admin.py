@@ -60,15 +60,47 @@ class LectureResource(resources.ModelResource):
             date_time_str = '未确定时间'
         return date_time_str
 
-    def import_obj(self, obj, data, dry_run):
-        super(LectureResource, self).import_obj(obj, data, dry_run)
-        # extra update fields:
+    def init_instance(self, row):
+        """
+        Initializes a new Django model.
+        """
+        lec = self._meta.model()
+        # set the classroom
+        field = self.fields['school']
+        school_name = field.clean(row)
         field = self.fields['grade_class_id']
-        grade_class_string = field.clean(data)
-        grade_id, class_id = unpack_class_name(grade_class_string)
-        obj.classroom.grade = grade_id
-        obj.classroom.class_id = class_id
-        obj.classroom.save()
+        grade_class_string = field.clean(row)
+        class_obj = Class.objects.get_class(school_name, grade_class_string)
+        if class_obj is None:
+            # create the class on the fly
+            try:
+                sch = School.objects.get(name=school_name)
+            except School.DoesNotExist:
+                raise NameError(school + ' does not exist in database')
+            grade_id, class_id_value = unpack_class_name(grade_class_string)
+            class_obj = Class(school=sch, grade=grade_id, class_id=class_id_value)            
+            class_obj.save() # ignore dry run
+        lec.classroom = class_obj
+
+        # set the lawyer
+        field = self.fields['lawyer']
+        lawyer_name = field.clean(row)
+        try:
+            p = Lawyer.objects.get(user__username=lawyer_name)
+        except Lawyer.DoesNotExist:
+            raise NameError(lawyer_name + ' does not exist in database')
+        lec.lawyer = p
+
+        # set the course
+        field = self.fields['course']
+        course_name = field.clean(row)
+        try:
+            cour = Course.objects.get(name=course_name)
+        except Course.DoesNotExist:
+            raise NameError(course_name + ' does not exist in database')
+        lec.course = cour
+
+        return lec
 
 class ClassInline(admin.StackedInline):
     model = Class

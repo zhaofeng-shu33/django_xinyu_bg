@@ -10,7 +10,7 @@ class LectureInstanceLoader(ModelInstanceLoader):
             grade_class_string = field.clean(row)
             class_obj = Class.objects.get_class(school_name, grade_class_string)
             if class_obj is None:
-                return NameError(school_name + ' ' + grade_class_string + ' not exists in database')
+                return None
             params['classroom'] = class_obj
             field = self.resource.fields['course']
             params[field.attribute] = field.clean(row)
