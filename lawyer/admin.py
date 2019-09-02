@@ -39,7 +39,7 @@ class LectureResource(resources.ModelResource):
         fields =()
     school = Field(attribute='classroom__school__name', column_name='学校名称')
     grade_class_id = Field(column_name='班级')
-    lawyer = Field(attribute='classroom__lawyer__user__username', column_name='授课律师')
+    lawyer = Field(attribute='lawyer__user__username', column_name='授课律师')
     course = Field(attribute='course__name', column_name='课程名称')
     course_date_time = Field(column_name='授课时间')
 
