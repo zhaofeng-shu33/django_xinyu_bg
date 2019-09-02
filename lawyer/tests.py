@@ -87,3 +87,8 @@ class CleansingTest(unittest.TestCase):
         self.assertEqual(dt.hour, 15)
         self.assertEqual(dt.minute, 30)
         self.assertEqual(duration, 40)
+        negative_datetime_1 = '4月26日 15：30-16:10'
+        try:
+            dt, duration = parse_time(right_datetime_1)
+        except NameError:
+            pass

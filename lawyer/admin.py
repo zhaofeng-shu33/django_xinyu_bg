@@ -5,7 +5,7 @@ from import_export.fields import Field
 from datetime import timedelta
 from .models import LawyerOffice, Lawyer, School, Class, Course, Lecture, Semester, LawyerOfficeSemester
 from .data_io import LectureInstanceLoader
-from .cleanse import unpack_class_name
+from .cleanse import unpack_class_name, parse_time
 
 # Register your models here.
 class LawyerOfficeResource(resources.ModelResource):
@@ -104,6 +104,11 @@ class LectureResource(resources.ModelResource):
     def import_obj(self, obj, data, dry_run):
         super(LectureResource, self).import_obj(obj, data, dry_run)
         # update the teaching time
+        field = self.fields['course_date_time']
+        course_date_time = field.clean(data)
+        dt, duration = parse_time(course_date_time)
+        obj.start_time = dt
+        obj.duration = duration
 
 class ClassInline(admin.StackedInline):
     model = Class
