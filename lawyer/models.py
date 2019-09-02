@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+from .cleanse import unpack_class_name
 # to do, cache empty office id only
 EMPTY_OFFICE_OBJ_CACHE = None
 SEMESTER_CACHE = None
+
 class LawyerOffice(models.Model):
     class Meta:
         verbose_name = "律所"
@@ -55,7 +57,19 @@ class SemesterManager(models.Manager):
     def clear_cache(self):
         global SEMESTER_CACHE
         SEMESTER_CACHE = {}  
-        
+
+class ClassManager(models.Manager):
+    def get_class(self, school_name, class_chinese_name):
+        class_filter_1 = Class.objects.filter(school__name=school_name)
+        if len(class_filter_1) == 0:
+            return None
+        # unpack 'n年级m班'        
+        grade_id, class_id_value = unpack_class_name(class_chinese_name)
+        try:
+            return class_filter_1.get(grade=grade_id, class_id=class_id_value)
+        except Class.DoesNotExist:
+            return None
+
 class Semester(models.Model):
     class Meta:
         verbose_name = '学期'
@@ -89,6 +103,7 @@ class Class(models.Model):
     school = models.ForeignKey(School, related_name='classes', on_delete=models.CASCADE)
     grade = models.IntegerField('年级')
     class_id = models.IntegerField('班级')
+    objects = ClassManager()
     def __str__(self):
         return (self.school.name + '%d年级%d班' % (self.grade, self.class_id))
    
