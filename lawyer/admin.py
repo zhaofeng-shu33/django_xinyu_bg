@@ -78,10 +78,13 @@ class LectureResource(resources.ModelResource):
             try:
                 sch = School.objects.get(name=school_name)
             except School.DoesNotExist:
-                raise NameError(school + ' does not exist in database')
-            grade_id, class_id_value = unpack_class_name(grade_class_string)
-            class_obj = Class(school=sch, grade=grade_id, class_id=class_id_value)            
-            class_obj.save() # ignore dry run
+                raise NameError(school_name + ' does not exist in database')
+            if False: # to do: allow create class on the fly under some conditions
+                grade_id, class_id_value = unpack_class_name(grade_class_string)
+                class_obj = Class(school=sch, grade=grade_id, class_id=class_id_value)            
+                class_obj.save() # ignore dry run
+            else:
+                raise NameError(school_name + ' does not have ' + grade_class_string)
         lec.classroom = class_obj
 
         # set the lawyer
