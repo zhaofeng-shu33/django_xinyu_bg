@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 # to do, cache empty office id only
 EMPTY_OFFICE_OBJ_CACHE = None
-SEMESTER_CACHE = {}
+SEMESTER_CACHE = None
 class LawyerOffice(models.Model):
     class Meta:
         verbose_name = "律所"
@@ -39,12 +39,19 @@ class School(models.Model):
 
 class SemesterManager(models.Manager):
     def get_current(self):
+        global SEMESTER_CACHE
         # select the latest semester
-        if(SEMESTER_CACHE.get('id') is None):
+        if SEMESTER_CACHE is None:
             s = Semester.objects.order_by('-end_date')[0]
+            SEMESTER_CACHE = {}
             SEMESTER_CACHE['id'] = s.id
             SEMESTER_CACHE['name'] = s.name
         return SEMESTER_CACHE
+    def get_current_obj(self):
+        global SEMESTER_CACHE
+        if SEMESTER_CACHE is None:
+            self.get_current()
+        return Semester.objects.get(id=SEMESTER_CACHE['id'])
     def clear_cache(self):
         global SEMESTER_CACHE
         SEMESTER_CACHE = {}  
@@ -114,9 +121,7 @@ class LawyerOfficeSemester(models.Model):
 
 def initialize_empty_office(lawyer_p):
     global EMPTY_OFFICE_OBJ_CACHE
-    s = Semester.objects.get_current()    
     if EMPTY_OFFICE_OBJ_CACHE is None:
         EMPTY_OFFICE_OBJ_CACHE = LawyerOffice.objects.get(name='空')
-    # to do, add get_current_semester_obj func
-    instance = LawyerOfficeSemester(lawyer=lawyer_p, office=EMPTY_OFFICE_OBJ_CACHE, semester=Semester.objects.get(id=s['id']))
+    instance = LawyerOfficeSemester(lawyer=lawyer_p, office=EMPTY_OFFICE_OBJ_CACHE, semester=Semester.objects.get_current_obj())
     instance.save()
