@@ -1,7 +1,10 @@
+from datetime import datetime
+
 from django.test import TestCase
 from django.contrib.auth.models import User
+
 from .models import Lawyer, Semester, initialize_empty_office, LawyerOffice, Semester, School, Class, Lecture, Course
-from datetime import datetime
+from .admin import LectureResource
 # Create your tests here.
 def create_necessary_test_data():
         # create current Semester
@@ -37,3 +40,11 @@ class LawyerModelTests(TestCase):
         s = Semester.objects.get_current()
         office_semester = p.lawyer_office_semesters.get(semester__id = s['id'])
         self.assertTrue(office_semester.office.name == '空')
+
+class LectureIOTest(TestCase):
+    def test_import_export_lectures_data(self):
+        create_necessary_test_data()
+        dataset = LectureResource().export()
+        result = LectureResource().import_data(dataset, dry_run=True, raise_errors=True)
+        self.assertFalse(result.has_errors())
+        
