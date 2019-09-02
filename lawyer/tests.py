@@ -61,7 +61,15 @@ class LectureIOTest(TestCase):
         new_row[1] = '6年级2班'
         dataset.append(new_row)
         result = LectureResource().import_data(dataset, dry_run=True, raise_errors=True)
-        
+    def test_non_raise_error(self):
+        create_necessary_test_data()
+        dataset = LectureResource().export()
+        new_row = list(dataset[0])
+        new_row[1] = '6年级二班'
+        dataset.append(new_row)
+        result = LectureResource().import_data(dataset, dry_run=True, raise_errors=False)
+        self.assertTrue(result.has_errors())
+        self.assertTrue(isinstance(result.row_errors()[0][1][0].error, NameError))
 
 class CleansingTest(unittest.TestCase):
     def test_cleanse_class_name(self):
