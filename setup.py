@@ -1,7 +1,8 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 setup(
     name="lawyer",
     version="0.2",
+    packages=find_packages(),
     author="zhaofeng-shu33",
     description="backend for xinyu",
     url="https://github.com/zhaofeng-shu33/django_xingyu_bg",
